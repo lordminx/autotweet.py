@@ -1,0 +1,13 @@
+{
+    "mastodon": {
+        "clientfile": "Filepath to your Mastodon clients credential file",
+        "userfile": "Filepath to your Mastodon User credential file."
+    },
+    "feed": "RSS/ATOM feed of your blog.",
+    "twitter": {
+        "CONSUMER_KEY": "Your Twitter Apps Consumer Key",
+        "CONSUMER_SECRET": "Your Twitter Apps Consumer Secret",
+        "OAUTH_SECRET": "The OAuth Secret of your Twitter User",
+        "OAUTH_TOKEN": "The OAuth Token of your Twitter User"
+    }
+}
