@@ -72,7 +72,7 @@ def makepost(title, link, content=None):
 
 def twitterconf(config):
     """Extract Twitter connection data from config dict."""
-    tc = config["Twitter"]
+    tc = config["twitter"]
     keys = ["OAUTH_TOKEN",
             "OAUTH_SECRET",
             "CONSUMER_KEY",
