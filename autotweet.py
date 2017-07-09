@@ -146,7 +146,7 @@ def toot(post, config, img=None, mime=None):
 
         print("Done.")
     except Exception as e:
-        print(e.value)
+        print(e)
         print()
         print("Sending Mastodon Message failed: Please check the config for errors and try again.")
 
