@@ -146,9 +146,9 @@ def toot(post, config, img=None, mime=None):
 
         print("Done.")
     except Exception as e:
-        print(e)
+        print(e, file=sys.stderr)
         print()
-        print("Sending Mastodon Message failed: Please check the config for errors and try again.")
+        print("Sending Mastodon Message failed: Please check the config for errors and try again.", file=sys.stderr)
 
 
 if __name__ == "__main__":
@@ -167,7 +167,6 @@ if __name__ == "__main__":
         title, link, content, img, mime = checkfeed(feed)
 
         post = makepost(title, link, config)
-        print(post)
 
     except IndexError:
         print("Feed could not be loaded.")
