@@ -19,6 +19,7 @@ import json
 import feedparser
 import docopt
 
+from urllib.parse import urlparse, urljoin
 from twitter import *
 from mastodon import Mastodon
 from bs4 import BeautifulSoup
@@ -26,13 +27,22 @@ from bs4 import BeautifulSoup
 import requests as r
 
 
+defaultconf = {
+        "template":'"{}"\n{}'
+}
+
+
 def loadjson(conf):
     """ Load json-formatted config file."""
     with open(conf) as f:
-        return json.load(f)
+        conf = json.load(f)
+        defaultconf.update(conf)
+    return defaultconf
 
-def getfeed(feed):
+def checkfeed(feed):
     """ Load and parse the given rss/atom feed."""
+
+    root = "://".join(urlparse(feed)[:2])
 
     fp = feedparser.parse(feed)
 
@@ -41,9 +51,8 @@ def getfeed(feed):
     content = fp["entries"][0]["summary"]
 
     print("Feed fetched and parsed.")
-    return title, link, content
 
-def hasimage(post):
+
     """ Check post for image links."""
 
     soup = BeautifulSoup(content, "html.parser")
@@ -51,24 +60,25 @@ def hasimage(post):
     if soup.img:
         src = soup.img["src"]
         print("Image link found.")
-        return src
+
+        if src[0] == "/":       # relative link
+            src = urljoin(root, src)
+
     else:
-        return None
+        src, img, mime = None, None, None
 
-def getimage(link):
-    """ Download the image."""
+    if src:
+        res = r.get(src)
+        if res.status_code == 200:
+            img = res.content
+            mime = res.headers["Content-Type"]
+            print("Image downloaded.")
 
-    res = r.get(link)
-    if res.status_code == 200:
-        img = res.content
-        mime = res.headers["Content-Type"]
-        print("Image downloaded.")
+    return title, link, content, img, mime
 
-    return img, mime
-
-def makepost(title, link, content=None):
+def makepost(title, link, config, content=None):
     """ Build tweet/toot text. """
-    return "Blogpost: \"{}\" {}".format(title, link)
+    return config["template"].format(title, link, content)
 
 def twitterconf(config):
     """Extract Twitter connection data from config dict."""
@@ -149,14 +159,11 @@ if __name__ == "__main__":
     try:
 
         feed = config["feed"]
-        title, link, content = getfeed(feed)
-        img = hasimage(content)
-        if img:
-            img, mime = getimage(img)
-        else:
-            img = None
-            mime = None
-        post = makepost(title, link)
+
+        title, link, content, img, mime = checkfeed(feed)
+
+        post = makepost(title, link, config)
+        print(post)
 
     except IndexError:
         print("Feed could not be loaded.")

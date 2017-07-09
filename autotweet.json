@@ -4,6 +4,7 @@
         "userfile": "Filepath to your Mastodon User credential file."
     },
     "feed": "RSS/ATOM feed of your blog.",
+    "template": "A python string uses as a str.format() template for the message text.",
     "twitter": {
         "CONSUMER_KEY": "Your Twitter Apps Consumer Key",
         "CONSUMER_SECRET": "Your Twitter Apps Consumer Secret",
