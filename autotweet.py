@@ -125,26 +125,30 @@ def mastodonconf(config):
 
 def toot(post, config, img=None, mime=None):
     """Post to Mastodon."""
+    try:
+        clientfile, userfile = mastodonconf(config)
 
-    clientfile, userfile = mastodonconf(config)
+        # Create Mastodon Connection
+        m = Mastodon(client_id=clientfile, access_token=userfile)
 
-    # Create Mastodon Connection
-    m = Mastodon(client_id=clientfile, access_token=userfile)
+        # make mastodon post
+        if img:
+            print("Uploading Image to Mastodon...")
+            media = m.media_post(media_file=img, mime_type=mime)
+            print("Done.")
 
-    # make mastodon post
-    if img:
-        print("Uploading Image to Mastodon...")
-        media = m.media_post(media_file=img, mime_type=mime)
+        print("Tooting...")
+
+        if img:
+            m.status_post(post, media_ids=[media["id"]])
+        else:
+            m.toot(post)
+
         print("Done.")
-
-    print("Tooting...")
-
-    if img:
-        m.status_post(post, media_ids=[media["id"]])
-    else:
-        m.toot(post)
-
-    print("Done.")
+    except Exception as e:
+        print(e.value)
+        print()
+        print("Sending Mastodon Message failed: Please check the config for errors and try again.")
 
 
 if __name__ == "__main__":
